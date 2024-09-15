@@ -17,6 +17,16 @@
 		"command": "commandpin.runCommand",
 		"title": "Run Command",
 		"icon": "resources/play-solid.svg"
+	  },
+	  {
+		"command": "commandpin.addPinned",
+		"title": "Pin Command",
+		"icon": "resources/plus-solid.svg"
+	  },
+	  {
+		"command": "commandpin.removePinned",
+		"title": "Unpin Command",
+		"icon": "resources/minus-solid.svg"
 	  }
 	],
 	"menus": {
@@ -24,6 +34,16 @@
 	  		{
 				"command": "commandpin.runCommand",
 				"when": "view == pinned-commands || view == all-commands",
+				"group": "inline@2"
+			},
+			{
+				"command": "commandpin.addPinned",
+				"when": "view == all-commands",
+				"group": "inline"
+			},
+			{
+				"command": "commandpin.removePinned",
+				"when": "view == pinned-commands",
 				"group": "inline"
 			}
 		]
