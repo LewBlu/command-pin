@@ -16,8 +16,22 @@
       {
         "command": "commandpin.helloWorld",
         "title": "Hello World"
-      }
+      },
+	  {
+		"command": "commandpin.runCommand",
+		"title": "Run Command",
+		"icon": "resources/play-solid.svg"
+	  }
     ],
+	"menus": {
+		"view/item/context": [
+      		{
+				"command": "commandpin.runCommand",
+				"when": "view == pinned-commands",
+				"group": "inline"
+			}
+		]
+	},
 	"viewsContainers": {
       "activitybar": [
         {
