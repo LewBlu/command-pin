@@ -6,10 +6,7 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.registerTreeDataProvider('pinned-commands', new TreeDataProvider());
 
 	const runCommand = vscode.commands.registerCommand('commandpin.runCommand', (command: TreeItem) => {
-		if(command.label instanceof String) {
-			vscode.commands.executeCommand(command.label as string);
-		}
-		vscode.window.showInformationMessage('Command Pin Command!');
+		vscode.commands.executeCommand(<string>command.label);
 	});
 
 	context.subscriptions.push(runCommand);
@@ -21,8 +18,9 @@ class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 	data: TreeItem[] = [];
   
 	constructor() {
+		const filterList = ['undo', 'redo'];
 		vscode.commands.getCommands().then(commands => {
-			let commandList = commands.map((command: string) => new TreeItem(command));
+			let commandList = commands.filter((command: string) => filterList.includes(command)).map((command: string) => new TreeItem(command));
 			this.data = commandList;
 		});
 	}
