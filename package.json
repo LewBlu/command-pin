@@ -1,6 +1,6 @@
 {
   "name": "commandpin",
-  "displayName": "CommandPin",
+  "displayName": "Command Pin",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -29,6 +29,16 @@
 		"icon": "resources/minus-solid.svg"
 	  }
 	],
+	"configuration": {
+      	"title": "Command Pin",
+      	"properties": {
+        	"commandpin.pinnedCommands": {
+          		"type": "array",
+          		"default": [],
+          		"description": "List of pinned commands"
+			}
+      	}
+	},
 	"menus": {
 		"view/item/context": [
 	  		{

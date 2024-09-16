@@ -6,9 +6,14 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 	data: TreeItem[] = [];
   
 	constructor() {
-		const filterList = ['undo', 'redo'];
+		let filterList: string[] = vscode.workspace.getConfiguration('commandpin').get('pinnedCommands') ?? [];
 		vscode.commands.getCommands().then(commands => {
-			let commandList = commands.filter((command: string) => filterList.includes(command)).map((command: string) => new TreeItem(command));
+			let commandList: TreeItem[] = [];
+			if(filterList.length) {
+				commandList = commands.filter((command: string) => filterList.includes(command)).map((command: string) => new TreeItem(command));
+			} else {
+				commandList = [];
+			}
 			this.data = commandList;
 		});
 	}
