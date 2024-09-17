@@ -1,21 +1,13 @@
 import * as vscode from 'vscode';
 
 export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
-	onDidChangeTreeData?: vscode.Event<TreeItem|null|undefined>|undefined;
+	public _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
   
 	data: TreeItem[] = [];
   
 	constructor() {
-		let filterList: string[] = vscode.workspace.getConfiguration('commandpin').get('pinnedCommands') ?? [];
-		vscode.commands.getCommands().then(commands => {
-			let commandList: TreeItem[] = [];
-			if(filterList.length) {
-				commandList = commands.filter((command: string) => filterList.includes(command)).map((command: string) => new TreeItem(command));
-			} else {
-				commandList = [];
-			}
-			this.data = commandList;
-		});
+		this.getCommands();
 	}
   
 	getTreeItem(element: TreeItem): vscode.TreeItem|Thenable<vscode.TreeItem> {
@@ -28,10 +20,29 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 		}
 		return element.children;
 	}
+
+	getCommands() {
+		let filterList: string[] = vscode.workspace.getConfiguration('commandpin').get('pinnedCommands') ?? [];
+		vscode.commands.getCommands().then(commands => {
+			let commandList: TreeItem[] = [];
+			if(filterList.length) {
+				commandList = commands.filter((command: string) => filterList.includes(command)).map((command: string) => new TreeItem(command));
+			} else {
+				commandList = [];
+			}
+			this.data = commandList;
+		});
+	}
+
+	public refresh(): void {
+		this.getCommands();
+        this._onDidChangeTreeData.fire(undefined);
+    }
 }
 
 export class AllTreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
-	onDidChangeTreeData?: vscode.Event<TreeItem|null|undefined>|undefined;
+	public _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
+	readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
   
 	data: TreeItem[] = [];
   
