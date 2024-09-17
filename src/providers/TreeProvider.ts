@@ -6,63 +6,41 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   
 	data: TreeItem[] = [];
   
-	constructor() {
-		this.getCommands();
+	constructor(public isPinnedView: boolean = false)
+	{
+		this.getCommands(this.isPinnedView);
 	}
   
-	getTreeItem(element: TreeItem): vscode.TreeItem|Thenable<vscode.TreeItem> {
+	getTreeItem(element: TreeItem): vscode.TreeItem|Thenable<vscode.TreeItem>
+	{
 		return element;
 	}
   
-	getChildren(element?: TreeItem|undefined): vscode.ProviderResult<TreeItem[]> {
+	getChildren(element?: TreeItem|undefined): vscode.ProviderResult<TreeItem[]>
+	{
 		if (element === undefined) {
 			return this.data;
 		}
 		return element.children;
 	}
 
-	getCommands() {
-		let filterList: string[] = vscode.workspace.getConfiguration('commandpin').get('pinnedCommands') ?? [];
+	getCommands(isPinnedView: boolean): void
+	{
 		vscode.commands.getCommands().then(commands => {
-			let commandList: TreeItem[] = [];
-			if(filterList.length) {
-				commandList = commands.filter((command: string) => filterList.includes(command)).map((command: string) => new TreeItem(command));
-			} else {
-				commandList = [];
-			}
-			this.data = commandList;
+			let filterList: string[] = vscode.workspace.getConfiguration('commandpin').get('pinnedCommands') ?? [];
+
+			let outputCommands = isPinnedView ?
+				commands.filter((command: string) => filterList.includes(command)) :
+				commands;
+
+			this.data = outputCommands.map((command: string) => new TreeItem(command));
 		});
 	}
 
-	public refresh(): void {
-		this.getCommands();
+	refresh(): void {
+		this.getCommands(true);
         this._onDidChangeTreeData.fire(undefined);
     }
-}
-
-export class AllTreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
-	public _onDidChangeTreeData: vscode.EventEmitter<any> = new vscode.EventEmitter<any>();
-	readonly onDidChangeTreeData: vscode.Event<any> = this._onDidChangeTreeData.event;
-  
-	data: TreeItem[] = [];
-  
-	constructor() {
-		vscode.commands.getCommands().then(commands => {
-			let commandList = commands.map((command: string) => new TreeItem(command));
-			this.data = commandList;
-		});
-	}
-  
-	getTreeItem(element: TreeItem): vscode.TreeItem|Thenable<vscode.TreeItem> {
-		return element;
-	}
-  
-	getChildren(element?: TreeItem|undefined): vscode.ProviderResult<TreeItem[]> {
-		if (element === undefined) {
-			return this.data;
-		}
-		return element.children;
-	}
 }
 
 export class TreeItem extends vscode.TreeItem {

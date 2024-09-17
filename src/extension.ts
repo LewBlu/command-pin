@@ -1,12 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { AllTreeDataProvider, TreeDataProvider, TreeItem } from './providers/TreeProvider';
+import { TreeDataProvider, TreeItem } from './providers/TreeProvider';
 
 export function activate(context: vscode.ExtensionContext) {
-	const treeDataProvider = new TreeDataProvider();
+	const treeDataProvider = new TreeDataProvider(true);
 	vscode.window.createTreeView('pinned-commands', { treeDataProvider });
-	vscode.window.registerTreeDataProvider('all-commands', new AllTreeDataProvider());
+	vscode.window.registerTreeDataProvider('all-commands', new TreeDataProvider());
 
 	const runCommand = vscode.commands.registerCommand('commandpin.runCommand', (command: TreeItem) => {
 		vscode.commands.executeCommand(<string>command.label);
@@ -16,9 +16,10 @@ export function activate(context: vscode.ExtensionContext) {
 		let config = vscode.workspace.getConfiguration('commandpin');
 		let commands: string[] = config.get('pinnedCommands') ?? [];
 		if(!commands.includes(<string>command.label)) {
+			commands.push(<string>command.label);
 			config.update(
 				'pinnedCommands', 
-				commands.push(<string>command.label),
+				commands,
 				true
 			).then(() => treeDataProvider.refresh());
 		}
@@ -39,8 +40,6 @@ export function activate(context: vscode.ExtensionContext) {
 		addPinned,
 		removePinned
 	);
-	// context.subscriptions.push(addPinned);
-	// context.subscriptions.push(removePinned);
 }
 
 export function deactivate() {}
